@@ -3,19 +3,9 @@
 
 #include <stdio.h>
 #include <stdlib.h>
-
-
-//TODO change the structs to complience with matrix struct definition
+//TODO implement a transpose function
 
 typedef int data_type;
-struct data_set
-{
-	unsigned int number_of_data_features;
-	unsigned int number_of_training_set;
-	data_type* data_features_x;
-	data_type* data_result_y;
-};
-typedef struct data_set data_set;
 
 typedef struct matrix 
 {
@@ -24,83 +14,116 @@ typedef struct matrix
 	data_type *data;	
 } matrix;
 
-matrix* multiply_matrix(matrix m1,matrix m2)
+//return the value of row and column of a data_matrix
+data_type get_matrix_value(unsigned int row,unsigned int column,matrix* m)
 {
-	if(m1.columns != m2.rows)
+	//need to know column number
+	return *(m->data + (row*m->columns +column ));
+}
+
+void set_matrix_value(data_type val,unsigned int row,unsigned int column,matrix* m)
+{
+	//need to know column number
+	*(m->data + (row*m->columns +column ))=val;
+}
+
+
+matrix* multiply_vector(matrix *v1,matrix *v2)
+{
+
+
+}
+
+matrix* multiply_matrix(matrix* m1,matrix* m2)
+{
+	if(m1->columns != m2->rows)
 	{
+		printf("Error: can not multiply matrix");
 		return NULL;
 	}
 	matrix* ret = (matrix*) malloc(sizeof(matrix));
-	ret->rows = m1.rows;
-	ret->columns = m2.columns;
+	ret->rows = m1->rows;
+	ret->columns = m2->columns;
 	ret->data = (data_type*) malloc(sizeof(data_type)*ret->columns*ret->rows);
 
 	//TODO extract columns and rows to multiply it and sum of inner elements of a vector
-}
-
-
-unsigned int malloc_space_for_data_set(data_set* data)
-{
-	
-	data->data_features_x = (data_type*) malloc(data->number_of_training_set*data->number_of_data_features*sizeof(data_type));
-	data->data_result_y = (data_type*)  malloc(data->number_of_training_set*sizeof(data_type));
-}
-//return the value of row and column of a data_matrix
-data_type get_matrix_value(unsigned int fil,unsigned int col,unsigned int n_cols,data_type* data_matrix)
-{
-	//need to know column number
-	return *(data_matrix + (fil*n_cols +col ));
-}
-
-
-int load_data(const char* file_name,data_set* data)
-{
-	FILE* file = fopen(file_name,"r");
-	if(!file)
+	int row_,column_,aux,idx;
+	for(row_ = 0;row_<ret->rows;row_++)
 	{
-		return 0;
-	}
-	fscanf(file,"%d %d",&data->number_of_training_set,&data->number_of_data_features);
-	malloc_space_for_data_set(data);
-	
-	int idx = 0;
-	int n_feature = 0;
-	data_type aux_data;
-	
-	//Blucle to load the data set
-	for(idx=0;idx<data->number_of_training_set;idx++)
-	{
-		for(n_feature = 0;n_feature<data->number_of_data_features;n_feature++)
+		
+		for(column_=0;column_<ret->columns;column_++)
 		{
-			//Read and storage data in fetures vector
-			fscanf(file,"%d",&aux_data);
-			*(data->data_features_x +(idx * data->number_of_data_features + n_feature)) = aux_data;
-			//printf("%d ",aux_data);
-			//Read and storage data in y vector
-			fscanf(file,"%d",&aux_data);
-			//printf("%d\n",aux_data);
-			*(data->data_result_y + idx) = aux_data;
+			aux=0;
+			for(idx =0;idx<ret->rows;idx++)
+			{
+				aux+=get_matrix_value(row_,idx,m1)*get_matrix_value(idx,column_,m2);
+			}
+			set_matrix_value(aux,row_,column_,ret);
+			
 		}
-	
 	}
-	fclose(file);
-	return 1;
+	return ret;
 }
 
 
-void print_matrix(unsigned int rows,unsigned int columns, data_type* matrix)
+unsigned int malloc_space_for_matrix(matrix *data)
 {
-	int i,j;
-	for (i=0;i<rows;i++)
+	
+	data->data = (data_type*) malloc(data->rows*data->columns*sizeof(data_type));
+}
+
+
+
+
+
+#define ROW 1
+#define COLUMN 2 
+matrix* get_vector(unsigned int l,unsigned int number,matrix *m)
+{
+	matrix* ret = (matrix*) malloc(sizeof(matrix));
+	
+	if(l==COLUMN)
 	{
-		for(j=0;j<columns;j++)
-		{
-			printf("%d ",get_matrix_value(i,j,columns,matrix));
-		}
-		printf("\n");
+		ret->rows = m->rows;
+		ret->columns = 1;
 	}
+	else
+	{
+		ret->rows = 1;
+		ret->columns = m->columns;	
+	}
+	
+	malloc_space_for_matrix(ret);
+	
+	int idx;
+	int top;
+	if(l==COLUMN)
+	{
+		top = ret->rows;
+	}
+	else
+	{
+		top = ret->columns;
+	}
+	for(idx=0;idx<top;idx++)
+	{
+		if(l==COLUMN)
+			*(ret->data+idx)=get_matrix_value(idx,number,m);
+		else
+			*(ret->data+idx)=get_matrix_value(number,idx,m);
+	}
+	return ret;
 
 }
 
+matrix* get_column(unsigned int col,matrix *m)
+{
+	return get_vector(COLUMN,col,m);
+}
+
+matrix* get_row(unsigned int row,matrix *m)
+{
+	return get_vector(ROW,row,m);
+}
 
 #endif

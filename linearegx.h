@@ -3,6 +3,14 @@
 
 #include "matrix.h"
 
+
+typedef struct data_set
+{
+	matrix data_features_x;
+	matrix data_result_y;
+} data_set;
+
+/*
 double t0,t1;
 
 double hypothesis(data_type* thetas,unsigned int n_features)
@@ -17,5 +25,5 @@ double hypothesis(data_type* thetas,unsigned int n_features)
 	return ret;
 	
 }
-
+*/
 #endif

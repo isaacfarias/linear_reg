@@ -3,8 +3,7 @@
 
 #include <stdio.h>
 #include <stdlib.h>
-//TODO implement a transpose function
-
+//TODO implement a free function to return memory to the OS
 typedef int data_type;
 
 typedef struct matrix 
@@ -17,23 +16,16 @@ typedef struct matrix
 //return the value of row and column of a data_matrix
 data_type get_matrix_value(unsigned int row,unsigned int column,matrix* m)
 {
-	//need to know column number
 	return *(m->data + (row*m->columns +column ));
 }
 
+//Set a value into a matrix row and column
 void set_matrix_value(data_type val,unsigned int row,unsigned int column,matrix* m)
 {
-	//need to know column number
 	*(m->data + (row*m->columns +column ))=val;
 }
 
-
-matrix* multiply_vector(matrix *v1,matrix *v2)
-{
-
-
-}
-
+//Multiply two matrix and return a new matrix with the resul
 matrix* multiply_matrix(matrix* m1,matrix* m2)
 {
 	if(m1->columns != m2->rows)
@@ -46,7 +38,6 @@ matrix* multiply_matrix(matrix* m1,matrix* m2)
 	ret->columns = m2->columns;
 	ret->data = (data_type*) malloc(sizeof(data_type)*ret->columns*ret->rows);
 
-	//TODO extract columns and rows to multiply it and sum of inner elements of a vector
 	int row_,column_,aux,idx;
 	for(row_ = 0;row_<ret->rows;row_++)
 	{
@@ -125,5 +116,26 @@ matrix* get_row(unsigned int row,matrix *m)
 {
 	return get_vector(ROW,row,m);
 }
+
+matrix* transpose(matrix* m)
+{
+	matrix* ret =(matrix *) malloc(sizeof(matrix));
+	ret->rows = m->columns;
+	ret->columns = m->rows;
+	
+	malloc_space_for_matrix(ret);
+	
+	int i,j;
+	
+	for(i=0;i<m->rows;i++)
+	{
+		for(j=0;j<m->columns;j++)
+		{
+			set_matrix_value(get_matrix_value(i,j,m),j,i,ret);
+		}
+	}
+	return ret;
+}
+
 
 #endif

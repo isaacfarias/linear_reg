@@ -45,7 +45,7 @@ matrix* multiply_matrix(matrix* m1,matrix* m2)
 		for(column_=0;column_<ret->columns;column_++)
 		{
 			aux=0;
-			for(idx =0;idx<ret->rows;idx++)
+			for(idx =0;idx<m2->rows;idx++)
 			{
 				aux+=get_matrix_value(row_,idx,m1)*get_matrix_value(idx,column_,m2);
 			}

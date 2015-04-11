@@ -4,7 +4,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 //TODO implement a free function to return memory to the OS
-typedef int data_type;
+typedef double data_type;
 
 typedef struct matrix 
 {

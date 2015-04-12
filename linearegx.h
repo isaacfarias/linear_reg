@@ -30,7 +30,7 @@ double hypothesis(matrix *thetas,matrix *x)
 
 // J(t0,t1,t2,...,tn) = 1/2m E (i=1->M) (h0(X(i)) - y(i))^2
 
-double J(matrix* thetas,matrix *x,matrix *y)
+double J(matrix* thetas,matrix *x,matrix *y,int derivate)
 {
 	double ret=0,aux;
 	int i;
@@ -40,10 +40,27 @@ double J(matrix* thetas,matrix *x,matrix *y)
 		x_i = get_row(i,x);
 		trans= transpose(x_i);
 		aux = hypothesis(thetas,trans) - get_matrix_value(i,0,y);
-		aux = aux*aux;
+		if (!derivate)
+			aux = aux*aux;
+		else
+		{
+			if(i>=1)//TODO is this value correct for LR???
+			aux=aux*get_matrix_value(i,derivate,m);
+		}
 		ret += aux;
 	}
-	return (ret/(2*x->rows));
+	if (derivate)
+		{
+			return (ret/x->rows);
+		}
+	else
+		return (ret/(2*x->rows));
+}
+
+double gradient_decent(double alpha)
+{
+		
+
 }
 
 #endif

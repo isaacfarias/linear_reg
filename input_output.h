@@ -16,8 +16,11 @@ int load_data(const char* file_name,data_set* data)
 	data->data_features_x =(matrix*) malloc(sizeof(matrix));
 	data->data_result_y =(matrix*) malloc(sizeof(matrix));
 	data->thetas =(matrix*) malloc(sizeof(matrix)); 
+	int file_r,file_c;
+	fscanf(file,"%d %d",&file_r,&file_c);
+	data->data_features_x->rows = file_r;
+	data->data_features_x->columns = file_c; //TODO check if is necesary to plus one because t0*x0 (x0=1)
 	
-	fscanf(file,"%d %d",&data->data_features_x->rows,&data->data_features_x->columns);
 	data->data_result_y->rows = data->data_features_x->rows;
 	data->data_result_y->columns = 1;
 	data->thetas->rows = data->data_features_x->columns;
@@ -42,7 +45,7 @@ int load_data(const char* file_name,data_set* data)
 		{
 			//Read and storage data in fetures vector
 			fscanf(file,"%lf",&aux_data);
-			*(data->data_features_x->data +(idx * data->data_features_x->columns + n_feature)) = aux_data;
+			*(data->data_features_x->data +(idx * data->data_features_x->columns + n_feature)) = aux_data;//TODO try to use the set_value function for matrixes
 			//printf("%d ",aux_data);
 
 		}

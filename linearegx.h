@@ -43,9 +43,9 @@ double J(matrix* thetas,matrix *x,matrix *y,int derivate)
 		if (!derivate)
 			aux = aux*aux;
 		else
-		{
+		{//TODO check if this works.
 			if(i>=1)//TODO is this value correct for LR???
-			aux=aux*get_matrix_value(i,derivate,m);
+			aux=aux*get_matrix_value(i,derivate,x);
 		}
 		ret += aux;
 	}

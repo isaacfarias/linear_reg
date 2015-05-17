@@ -13,7 +13,8 @@ typedef struct data_set
 
 
 //h = t0*x0 + t1*x1 + ... +tn*xn 
-//h = multiply_matrix(transpose(thetas),x);
+//h = multiply_matrix(thetas,transpose(x))
+//h = multiply_matrix both matrixes must be nx1 and nx1
 
 double hypothesis(matrix *thetas,matrix *x)
 {
@@ -28,6 +29,25 @@ double hypothesis(matrix *thetas,matrix *x)
 	return ret;
 }
 
+
+double cost_function(matrix* thetas,matrix *x,matrix *y)
+{
+	double ret=0,aux;
+	int i;
+	matrix* x_i,*trans;
+	for(i =0;i<x->rows;i++)
+	{
+		x_i = get_row(i,x);
+		trans= transpose(x_i);
+		aux = hypothesis(thetas,trans) - get_matrix_value(i,0,y);
+		aux = aux*aux;
+		ret += aux;
+		free(x_i);
+		free(trans);
+	}
+	return (ret/(2*x->rows));
+}
+
 // J(t0,t1,t2,...,tn) = 1/2m E (i=1->M) (h0(X(i)) - y(i))^2
 
 double J(matrix* thetas,matrix *x,matrix *y,int derivate)
@@ -40,27 +60,41 @@ double J(matrix* thetas,matrix *x,matrix *y,int derivate)
 		x_i = get_row(i,x);
 		trans= transpose(x_i);
 		aux = hypothesis(thetas,trans) - get_matrix_value(i,0,y);
-		if (!derivate)
-			aux = aux*aux;
-		else
-		{//TODO check if this works.
-			if(i>=1)//TODO is this value correct for LR???
-			aux=aux*get_matrix_value(i,derivate,x);
-		}
+		aux=aux*get_matrix_value(i,derivate,x);
 		ret += aux;
+		
+		//TODO Free mallocs
 	}
-	if (derivate)
-		{
-			return (ret/x->rows);
-		}
-	else
-		return (ret/(2*x->rows));
+	return (ret/(x->rows));
 }
 
-double gradient_decent(double alpha)
+int gradient_decent(data_set *data)
 {
+	data_type *aux_thetas=(data_type*) malloc(sizeof(data_type) * data->thetas->rows);
+	int cont,cont_thetas;
+	data_type aux_val,cost_value;
+	unsigned char stop = 0;
+	
+	for(cont = 0; !stop ;cont++)
+	{	
+		cost_value = cost_function(data->thetas,data->data_features_x,data->data_result_y);
+		//Calculate thetas
+		for (cont_thetas = 0;cont_thetas<data->thetas->rows;cont_thetas++)
+		{
+			aux_thetas[cont_thetas] = J(data->thetas,data->data_features_x,data->data_result_y,cont_thetas);
+		}
+		//Update simultaneously thetas
+		for (cont_thetas = 0;cont_thetas<data->thetas->rows;cont_thetas++)
+		{
+			aux_val = get_matrix_value(cont_thetas,0,data->thetas) - ((0.01) * aux_thetas[cont_thetas]/data->data_features_x->rows);
+			 set_matrix_value(aux_val,cont_thetas,0,data->thetas);
+		}
+		printf("cost_function: %lf\n",cost_value);
+		if (cost_value<cost_function(data->thetas,data->data_features_x,data->data_result_y))
+			stop = 1;
 		
-
+	}
+	return cont;
 }
 
 #endif

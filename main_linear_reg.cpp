@@ -9,15 +9,17 @@ int** data_features;
  
 int main(int argc, char** argv)
 {
-	data_set data;
+	data_set* data =(data_set*) malloc(sizeof(data_set));
 	printf("Hola mundo\n");
-	load_data("data.txt",&data);
-	//printf("matrix size: %d %d\n",data.number_of_training_set, data.number_of_data_features);
-	//print_matrix(data.data_features_x);
-	//print_matrix(data.thetas);
-	//print_matrix(transpose(data.thetas));
-	//print_matrix(transpose(get_row(0,data.data_features_x)));
-	print_matrix(data.data_result_y);
-	printf("%.2lf\n",J(data.thetas,data.data_features_x,data.data_result_y));
+	load_data("data.txt",data);
+	
+	print_matrix(data->thetas);
+	int times = gradient_decent(data);
+	print_matrix(data->thetas);
+	printf("times :%d \ny = %lf + %lf(x) \n",times,get_matrix_value(0,0,data->thetas),get_matrix_value(1,0,data->thetas));
+	//matrix *aux = transpose(get_row(3,data->data_features_x)); 
+	//print_matrix(aux);
+	//J(matrix* thetas,matrix *x,matrix *y,int derivate)
+	//;
 	return 0;
 }

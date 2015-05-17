@@ -60,7 +60,7 @@ int load_data(const char* file_name,data_set* data)
 		{
 			//set the thetas to 1;
 			//*(data->thetas->data + n_feature) = 1;
-			set_matrix_value(1,n_feature,0,data->thetas);
+			set_matrix_value(n_feature+1,n_feature,0,data->thetas);
 		}
 	
 	
